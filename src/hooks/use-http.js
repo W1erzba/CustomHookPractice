@@ -9,11 +9,9 @@ const useHttp = () => {
 		setError(null);
 		try {
 			const response = await fetch(requestConfig.url, {
-				mehtod: requestConfig.mehtod ? requestConfig.mehtod : 'GET',
+				method: requestConfig.method ? requestConfig.method : 'GET',
 				headers: requestConfig.headers ? requestConfig.headers : {},
-				body: JSON.stringify(requestConfig.body)
-					? JSON.stringify(requestConfig.body)
-					: null,
+				body: requestConfig.body ? JSON.stringify(requestConfig.body) : null,
 			});
 
 			if (!response.ok) {
@@ -27,6 +25,7 @@ const useHttp = () => {
 		}
 		setIsLoading(false);
 	}, []);
+
 	return {
 		isLoading,
 		error,

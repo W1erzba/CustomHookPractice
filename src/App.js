@@ -18,7 +18,7 @@ function App() {
 			}
 
 			setTasks(loadedTasks);
-		}; // there is no dependiency because setTask is an internal object and in React we don't have to add native elements to a dependiencies because they are constant to React.
+		};
 
 		fetchTasks(
 			{
