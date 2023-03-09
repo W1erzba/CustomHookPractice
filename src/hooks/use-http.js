@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
-const useHttp = (requestConfig, applyData) => {
+const useHttp = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	const sendRequest = async (taskText) => {
+	const sendRequest = useCallback(async (requestConfig, applyData) => {
 		setIsLoading(true);
 		setError(null);
 		try {
@@ -26,7 +26,7 @@ const useHttp = (requestConfig, applyData) => {
 			setError(err.message || 'Something went wrong!');
 		}
 		setIsLoading(false);
-	};
+	}, []);
 	return {
 		isLoading,
 		error,
@@ -35,3 +35,48 @@ const useHttp = (requestConfig, applyData) => {
 };
 
 export default useHttp;
+
+/*
+our component with useCallback state
+
+import { useState, useCallback } from 'react';
+
+const useHttp = (applyData) => {
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(null);
+
+	const sendRequest = useCallback(
+		async (requestConfig) => {
+			setIsLoading(true);
+			setError(null);
+			try {
+				const response = await fetch(requestConfig.url, {
+					mehtod: requestConfig.mehtod ? requestConfig.mehtod : 'GET',
+					headers: requestConfig.headers ? requestConfig.headers : {},
+					body: JSON.stringify(requestConfig.body)
+						? JSON.stringify(requestConfig.body)
+						: null,
+				});
+
+				if (!response.ok) {
+					throw new Error('Request failed!');
+				}
+
+				const data = await response.json();
+				applyData(data);
+			} catch (err) {
+				setError(err.message || 'Something went wrong!');
+			}
+			setIsLoading(false);
+		},
+		[applyData]
+	);
+	return {
+		isLoading,
+		error,
+		sendRequest,
+	};
+};
+
+export default useHttp;
+ */

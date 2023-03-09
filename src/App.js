@@ -7,30 +7,26 @@ import useHttp from './hooks/use-http';
 function App() {
 	const [tasks, setTasks] = useState([]);
 
-	const transformTasks = (tasksObj) => {
-		const loadedTasks = [];
-
-		for (const taskKey in tasksObj) {
-			loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text });
-		}
-
-		setTasks(loadedTasks);
-	};
-
-	const {
-		isLoading,
-		error,
-		sendRequest: fetchTasks,
-	} = useHttp(
-		{
-			url: 'https://react-http-4b003-default-rtdb.europe-west1.firebasedatabase.app/tasks.json',
-		},
-		transformTasks
-	);
+	const { isLoading, error, sendRequest: fetchTasks } = useHttp();
 
 	useEffect(() => {
-		fetchTasks();
-	}, []);
+		const transformTasks = (tasksObj) => {
+			const loadedTasks = [];
+
+			for (const taskKey in tasksObj) {
+				loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text });
+			}
+
+			setTasks(loadedTasks);
+		}; // there is no dependiency because setTask is an internal object and in React we don't have to add native elements to a dependiencies because they are constant to React.
+
+		fetchTasks(
+			{
+				url: 'https://react-http-4b003-default-rtdb.europe-west1.firebasedatabase.app/tasks.json',
+			},
+			transformTasks
+		);
+	}, [fetchTasks]);
 
 	const taskAddHandler = (task) => {
 		setTasks((prevTasks) => prevTasks.concat(task));
@@ -50,3 +46,52 @@ function App() {
 }
 
 export default App;
+
+/* our component logic with useCallback 
+
+import React, { useEffect, useState, useCallback } from 'react';
+
+import Tasks from './components/Tasks/Tasks';
+import NewTask from './components/NewTask/NewTask';
+import useHttp from './hooks/use-http';
+
+function App() {
+	const [tasks, setTasks] = useState([]);
+
+	const transformTasks = useCallback((tasksObj) => {
+		const loadedTasks = [];
+
+		for (const taskKey in tasksObj) {
+			loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text });
+		}
+
+		setTasks(loadedTasks);
+	}, []); // there is no dependiency because setTask is an internal object and in React we don't have to add native elements to a dependiencies because they are constant to React.
+
+	const { isLoading, error, sendRequest: fetchTasks } = useHttp(transformTasks);
+
+	useEffect(() => {
+		fetchTasks({
+			url: 'https://react-http-4b003-default-rtdb.europe-west1.firebasedatabase.app/tasks.json',
+		});
+	}, [fetchTasks]);
+
+	const taskAddHandler = (task) => {
+		setTasks((prevTasks) => prevTasks.concat(task));
+	};
+
+	return (
+		<React.Fragment>
+			<NewTask onAddTask={taskAddHandler} />
+			<Tasks
+				items={tasks}
+				loading={isLoading}
+				error={error}
+				onFetch={fetchTasks}
+			/>
+		</React.Fragment>
+	);
+}
+
+export default App;
+ */
